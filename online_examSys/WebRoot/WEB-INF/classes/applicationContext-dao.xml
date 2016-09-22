@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd 
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd 
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <bean id="jdbcConfig"  
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+        <property name="locations">  
+            <list>  
+                <value>classpath:jdbc.properties</value>               
+            </list>  
+        </property>  
+    </bean>  
+  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+  	<property name="driverClassName" value="${jdbc.driver}"/>
+  	<property name="url" value="${jdbc.url}"/>
+  	<property name="username" value="${jdbc.username}"/>
+  	<property name="password" value="${jdbc.password}"/>
+  </bean>
+  <!-- sessionFactory对象由spring来创建 -->
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+  	<property name="dataSource" ref="dataSource"/>
+  	<!-- 通用属性配置 -->
+  	<property name="hibernateProperties">
+  		<props>
+  			<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+  			<prop key="hibernate.show_sql">true</prop>
+  			<prop key="hibernate.format_sql">true</prop>
+  		</props>
+  	</property>
+  	<!-- 配置映射文件 -->
+  	<property name="annotatedClasses">
+  		<array>
+  			<value>cn.sxt.vo.Student</value>
+  			<value>cn.sxt.vo.Clazz</value>
+  			<value>cn.sxt.vo.Subject</value>
+  			<value>cn.sxt.vo.Question</value>
+  			<value>cn.sxt.vo.SetExam</value>
+  			<value>cn.sxt.vo.Result</value>
+  			<value>cn.sxt.vo.XiangQing</value>
+  		</array>
+  	</property>
+  </bean>
+  <!-- 配置声明式事务 -->
+  <!-- 配置事务管理器 -->
+  <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+  	<property name="sessionFactory" ref="sessionFactory"></property>
+  </bean>
+  <!-- 配置事务通知 -->
+  <tx:advice id="txAdvice" transaction-manager="txManager">
+  	<tx:attributes>
+  		<!-- 表示以save开头的方法都需要事务      
+  		propagation  表示事务的传播特性 
+  		REQUIRED  查看当前是否有事务，如果有，使用当前事务，如果没有开启新事务
+  		-->
+  		<tx:method name="save*" propagation="REQUIRED"/>
+  		<tx:method name="update*" propagation="REQUIRED"/>
+  		<tx:method name="find*" read-only="true"/>
+  		<tx:method name="*" propagation="REQUIRED"/>
+  	</tx:attributes>
+  </tx:advice>
+  <!-- 配置事务aop  -->
+	<aop:config>
+		<!--expression  指明事务在哪里起作用
+		第一个* 表示所有返回值 
+		第二个* 表示所有类
+		第三个* 表示类中的所有方法
+		.. 表示所有参数
+		  -->
+		<aop:pointcut expression="execution(* cn.sxt.service.impl.*.*(..))" id="pointcut"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>
+	</aop:config>  
+  
+</beans>
