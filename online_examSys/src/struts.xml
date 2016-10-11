@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="default" namespace="/" extends="struts-default">
+		<action name="stu*" class="stuAction" method="{1}">
+			<result>index.jsp</result>
+			<result name="login_defeat">login.jsp</result>
+			<result name="tosignup">student/sign_up.jsp</result>
+			<result name="signup_success">index.jsp</result>		
+			<result name="signup_false">student/sign_up.jsp</result>
+			<result name="findall">teacher/showStudent.jsp</result>
+			<result name="tokaoshi">student/goexam.jsp</result>
+			<result name="kaoshi">student/exam.jsp</result>
+			<result name="result">student/goexam.jsp</result>
+			<result name="findallexam">student/examRecord.jsp</result>
+			<result name="findxiangqing">student/xiangqing.jsp</result>
+		</action>
+		<action name="te*" class="teAction" method="{1}">
+			<result name="findAll">teacher/showStudent.jsp</result>
+			<result name="toaddStu">teacher/addStu.jsp</result>
+			<result  type="redirectAction">tefindAll</result>
+			<result name="addflase">teacher/addStu.jsp</result>
+			<result name="toupdate">teacher/updateStu.jsp</result>
+			<result name="toshowSub">teacher/showSubject.jsp</result>
+			<result name="showsub" type="redirectAction">tefindAllSubject</result>
+			<result name="toupdateSub">teacher/updateSub.jsp</result>
+			<result name="allque">teacher/showQuestion.jsp</result>
+			<result name="toaddQue">teacher/addQue.jsp</result>
+			<result name="addQueOk" type="redirectAction">tefindAllQue</result>
+			<result name="addQueFalse">teacher/addQue.jsp</result>
+			<result name="toupdateQue">teacher/updateQue.jsp</result>
+			<result name="setExamOk">right.jsp</result>
+			<result name="setExamFalse">teacher/setexam.jsp</result>
+		</action>
+	</package>
+</struts>
